@@ -31,7 +31,7 @@ let proxyGet = (req, res) => {
             try {
                 targetHostExpression = urlRegex.exec(doc.stdout).toString();
             }catch(err){
-                throw err;
+                console.log(doc);
             }
             let targetHost = targetHostExpression;
             let targetPort = 80;
