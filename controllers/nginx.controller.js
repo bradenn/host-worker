@@ -41,7 +41,8 @@ let proxyGet = (req, res) => {
         }).catch(err => {
             res.status(500).json({
                 success: false,
-                message: new Error("Domain exists but is not accessible.").toString()
+                message: new Error("Domain exists but is not accessible.").toString(),
+                error: err
             });
         });
     }).catch(err => {
