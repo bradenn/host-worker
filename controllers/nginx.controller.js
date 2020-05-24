@@ -13,7 +13,7 @@ let doesProxyExist = (domain) => new Promise((resolve, reject) => {
 });
 
 let updateProxy = (domain, host, port) => new Promise((resolve, reject) => {
-    let proxyStatement = `proxy_pass: ${host}:${port || 80};`;
+    let proxyStatement = `proxy_pass ${host}:${port || 80};`;
     let preparedCommand = `echo '${proxyStatement}' > ${env.NGINX}/proxies/${domain}.conf`;
     exec(preparedCommand).then(doc => {
         resolve(doc);
@@ -26,7 +26,7 @@ let proxyGet = (req, res) => {
     doesProxyExist(req.params.domain).then(doc => {
         let preparedCommand = `cat ${env.NGINX}/proxies/${req.params.domain}.conf`;
         exec(preparedCommand).then(doc => {
-            let stdout = doc.stdout.replace('proxy_pass: ', '').replace(';\n', '');
+            let stdout = doc.stdout.replace('proxy_pass ', '').replace(';\n', '');
             let targetHost = stdout;
             let targetPort = 80;
             if (stdout.split(':').length > 2) {
