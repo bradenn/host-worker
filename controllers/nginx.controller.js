@@ -39,10 +39,11 @@ let proxyGet = (req, res) => {
                 target: {host: targetHost, port: targetPort, ssl: targetHost.startsWith('https')}
             })
         }).catch(err => {
+            console.log(err);
             res.status(500).json({
                 success: false,
                 message: new Error("Domain exists but is not accessible.").toString(),
-                error: err.toString()
+                error: JSON.stringify(err)
             });
         });
     }).catch(err => {
