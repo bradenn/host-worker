@@ -1,4 +1,4 @@
-const env = require('../env/env');
+const env = require('./env/env');
 
 const express = require('express');
 let bodyParser = require('body-parser')
