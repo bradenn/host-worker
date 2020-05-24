@@ -5,7 +5,8 @@ module.exports = {
         env: {
             NODE_ENV: "production",
             PORT: 9955,
-            NGINX: "/etc/nginx"
+            NGINX: "/etc/nginx",
+            TOKEN: "a good password?"
         }
     }]
 }

@@ -2,3 +2,4 @@ node_modules/
 test/
 env/env.dev.js
 .idea/
+ecosystem.config.js
