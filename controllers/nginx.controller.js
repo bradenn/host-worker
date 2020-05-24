@@ -16,7 +16,7 @@ let updateProxy = (domain, host, port) => new Promise((resolve, reject) => {
     let proxyStatement = `proxy_pass: ${host}:${port || 80};`;
     let preparedCommand = `echo '${proxyStatement}' > ${env.NGINX}/proxies/${domain}.conf`;
     exec(preparedCommand).then(doc => {
-       resolve(doc);
+        resolve(doc);
     }).catch(err => {
         reject(err);
     });
@@ -26,25 +26,18 @@ let proxyGet = (req, res) => {
     doesProxyExist(req.params.domain).then(doc => {
         let preparedCommand = `cat ${env.NGINX}/proxies/${req.params.domain}.conf`;
         exec(preparedCommand).then(doc => {
-            let urlRegex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
-            let targetHostExpression = "Error";
-            try {
-                targetHostExpression = urlRegex.exec(doc.stdout).toString();
-            }catch(err){
-                console.log(doc);
-            }
-            let targetHost = targetHostExpression;
+            let stdout = doc.stdout.replace('proxy_pass: ', '').replace(';\n', '');
+            let targetHost = stdout;
             let targetPort = 80;
-            if (targetHostExpression.split(':').length > 2) {
-                targetHost = targetHostExpression.substr(0, targetHostExpression.lastIndexOf(':'));
-                targetPort = targetHostExpression.substr(targetHostExpression.lastIndexOf(':') + 1, targetHostExpression.length);
+            if (stdout.split(':').length > 2) {
+                targetHost = stdout.substr(0, stdout.lastIndexOf(':'));
+                targetPort = stdout.substr(stdout.lastIndexOf(':') + 1, stdout.length);
             }
             res.status(200).json({
                 success: true,
                 target: {host: targetHost, port: targetPort, ssl: targetHost.startsWith('https')}
             })
         }).catch(err => {
-            console.log(err);
             res.status(500).json({
                 success: false,
                 message: new Error("Domain exists but is not accessible.").toString(),
@@ -67,8 +60,11 @@ let proxyPost = (req, res) => {
                 res.status(500).json({success: false, message: new Error("Failed to create reference.").toString()});
             });
         });
-    }else{
-        res.status(400).json({success: false, message: new Error("Malformed request; please provide host and port.").toString()});
+    } else {
+        res.status(400).json({
+            success: false,
+            message: new Error("Malformed request; please provide host and port.").toString()
+        });
     }
 };
 
