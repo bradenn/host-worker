@@ -27,7 +27,12 @@ let proxyGet = (req, res) => {
         let preparedCommand = `cat ${env.NGINX}/proxies/${req.params.domain}.conf`;
         exec(preparedCommand).then(doc => {
             let urlRegex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
-            let targetHostExpression = urlRegex.exec(doc.stdout).toString();
+            let targetHostExpression = "Error";
+            try {
+                targetHostExpression = urlRegex.exec(doc.stdout).toString();
+            }catch(err){
+                throw err;
+            }
             let targetHost = targetHostExpression;
             let targetPort = 80;
             if (targetHostExpression.split(':').length > 2) {
